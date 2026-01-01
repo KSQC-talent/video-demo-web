@@ -5,19 +5,23 @@ const routes = [
     {
         path: "/",
         alias:["/home","/index"],
-        component: () => import("../views/index.vue")
+        component: () => import("@/views/index.vue")
     },
     {
         path: "/content",
-        component: () => import("../views/content.vue")
+        component: () => import("@/views/content.vue")
     },
     {
         path: "/video",
-        component: () => import("../views/video.vue")
+        component: () => import("@/views/video.vue")
+    },
+        {
+        path: "/videolist",
+        component: () => import("@/views/videolist.vue")
     },
     {
         path: "/user/:id",
-        component: () => import("../views/user.vue")
+        component: () => import("@/views/user.vue")
     },
     {
         path:"/test",

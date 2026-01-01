@@ -13,7 +13,7 @@ index
 <br>
 <router-link to="/content">内容页</router-link>
 <br>
-<router-link to="/video">视频页</router-link>
+<router-link to="/videolist">视频页</router-link>
 <br>
 <router-link to="/user/123">用户页</router-link>
 <br>
