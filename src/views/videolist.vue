@@ -1,6 +1,6 @@
 <template>
   <div class="video-list-container">
-    <!-- ✅ 新增：顶部搜索栏 + 标题 + 统计条数 一行布局 -->
+    <!-- ✅ 顶部搜索栏 + 标题 + 统计条数 一行布局 -->
     <div class="header-wrap">
       <div class="page-title">视频列表</div>
       <!-- 搜索框 -->
@@ -14,11 +14,11 @@
         />
         <button class="search-btn" @click="handleSearch">搜索</button>
       </div>
-      <!-- ✅ 核心新增：显示共多少条视频 -->
+      <!-- ✅ 显示共多少条视频 -->
       <div class="total-count">共 {{ pageInfo.total }} 条视频</div>
     </div>
 
-    <!-- ✅ 保留：搜索关键词展示 -->
+    <!-- ✅ 搜索关键词展示 -->
     <div class="search-tips" v-if="searchKeyword">
       搜索结果：<span class="search-keyword">{{ searchKeyword }}</span>
     </div>
@@ -86,7 +86,7 @@ const goTo = (item) => {
 // 1. 列表数据 & 加载状态
 const videoList = ref([])
 const loading = ref(false)
-// ✅ 新增：搜索输入框绑定值
+// 搜索输入框绑定值
 const searchInputVal = ref('')
 // 搜索关键字，从路由参数中获取
 const searchKeyword = ref('')
@@ -111,11 +111,11 @@ const getVideoList = async () => {
     // 获取url上的搜索关键字
     const keyword = route.query.keyword?.trim() || ''
     searchKeyword.value = keyword
-    // ✅ 同步搜索框值和搜索关键词一致
+    // 同步搜索框值和搜索关键词一致
     searchInputVal.value = keyword
 
     if (keyword) {
-      // 有搜索关键字：调用搜索接口 /selectByAuthor 带分页+关键字
+      // 有搜索关键字：调用搜索接口 带分页+关键字
       resData = await axios.get('/api/video/selectByName', {
         params: {
           keyword: keyword, // 搜索关键字
@@ -124,7 +124,7 @@ const getVideoList = async () => {
         }
       })
     } else {
-      // 无搜索关键字：调用原列表接口 /getVideoPage
+      // 无搜索关键字：调用原列表接口
       resData = await axios.get('/api/video/getVideoPage', {
         params: pageParams
       })
@@ -144,7 +144,7 @@ const getVideoList = async () => {
   }
 }
 
-// ✅ 新增核心：搜索方法
+// 搜索方法
 const handleSearch = () => {
   const keyword = searchInputVal.value.trim()
   // 跳转路由并携带搜索参数，触发watch重新请求列表
@@ -156,7 +156,7 @@ const handleSearch = () => {
   pageParams.current = 1
 }
 
-// 删除视频方法 对接 /api/video/deleteById 接口
+// 删除视频方法
 const handleDelete = async (id) => {
   console.log('准备删除视频ID：', id)
   try {
@@ -203,13 +203,13 @@ const handleImgError = (e) => {
   box-sizing: border-box;
 }
 
-/* ✅ 新增：顶部头部布局 - 标题+搜索框+统计条数 一行自适应排列 */
+/* 顶部头部布局 - 标题+搜索框+统计条数 一行自适应排列 */
 .header-wrap {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 12px;
   margin-bottom: 16px;
   padding-bottom: 12px;
   border-bottom: 1px solid #f2f4f7;
@@ -221,19 +221,22 @@ const handleImgError = (e) => {
   color: #2d3748;
   flex-shrink: 0;
 }
-/* ✅ 新增：搜索框样式 - 和项目风格统一 */
+/* 搜索框样式 - 和项目风格统一 */
 .search-wrap {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex: 1;
+  min-width: 240px;
 }
 .search-input {
-  width: 280px;
+  flex: 1;
+  min-width: 160px;
   height: 38px;
   padding: 0 14px;
   outline: none;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
+	border: 1px solid #e2e8f0;
+ 	border-radius: 6px;
   font-size: 14px;
   color: #2d3748;
   transition: all 0.3s ease;
@@ -245,6 +248,7 @@ const handleImgError = (e) => {
 }
 .search-input::placeholder { color: #a0aec0; }
 .search-btn {
+  flex-shrink: 0;
   height: 38px;
   padding: 0 18px;
   background: #165dff;
@@ -256,14 +260,15 @@ const handleImgError = (e) => {
   transition: all 0.3s ease;
 }
 .search-btn:hover { background: #0f48d1; }
-/* ✅ 新增：统计条数样式 */
+/* 统计条数样式 */
 .total-count {
   font-size: 14px;
   color: #667292;
   flex-shrink: 0;
+  white-space: nowrap;
 }
 
-/* ✅ 新增：搜索关键词提示文字 */
+/* 搜索关键词提示文字 */
 .search-tips {
   font-size: 16px;
   color: #4a5568;
@@ -274,11 +279,11 @@ const handleImgError = (e) => {
   font-weight: 500;
 }
 
-/* ========== 每行固定5个视频，满5个强制换行，永不错乱 ========== */
+/* ========== ✅ 核心修复：PC端5列，手机端自动变成2列，自适应完美 ========== */
 .video-card-wrap {
   display: grid;
-  grid-template-columns: repeat(5, 1fr); 
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
   margin-bottom: 40px;
 }
 
@@ -287,7 +292,7 @@ const handleImgError = (e) => {
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  padding: 16px;
+  padding: 12px;
   box-sizing: border-box;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   cursor: pointer;
@@ -307,7 +312,7 @@ const handleImgError = (e) => {
   overflow: hidden;
   background-color: #f9fafb;
   position: relative;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 /* 9:16封面图 居中铺满 不变形 */
 .video-pic {
@@ -377,7 +382,7 @@ const handleImgError = (e) => {
   background: #f9fafb;
 	border-radius: 8px;
   border: 1px solid #f2f4f7;
-  grid-column: 1 / -1; /* 空数据占满整行5列 */
+  grid-column: 1 / -1; /* 空数据占满整行 */
 }
 
 /* 分页容器 */
@@ -398,8 +403,41 @@ const handleImgError = (e) => {
 :deep(.el-pagination .el-pager li.is-active) {
   background: #165dff;
   color: #ffffff;
-} 
+}
 :deep(.el-pagination button:disabled) {
   color: #cbd5e0;
+}
+
+/* ========== ✅ 媒体查询 精准适配手机端 无任何折行 ========== */
+@media screen and (max-width: 768px) {
+  .video-list-container {
+    margin: 80px auto 30px;
+    padding: 0 15px;
+  }
+  .header-wrap {
+    gap: 10px;
+  }
+  .page-title {
+    font-size: 18px;
+  }
+  .search-wrap {
+    gap: 6px;
+    min-width: unset;
+  }
+  .search-input {
+    height: 36px;
+    font-size: 13px;
+  }
+  .search-btn {
+    height: 36px;
+    padding: 0 14px;
+    font-size: 13px;
+  }
+  .total-count {
+    font-size: 13px;
+  }
+  .video-card {
+    padding: 10px;
+  }
 }
 </style>
