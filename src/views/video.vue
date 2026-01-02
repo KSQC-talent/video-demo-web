@@ -1,9 +1,16 @@
 <template>
-  <!-- 外层全屏flex容器：核心！实现水平+垂直居中 -->
-  <div class="video-title">{{ videoName }}</div>
-  <div class="player-center-box">
-    <!-- 你的DPlayer挂载容器，保留原有宽高540*960不变 -->
-    <div id="dplayer" style="width: 540px; height: 960px"></div>
+  <!-- 上下排版核心容器：顶部信息 + 底部播放器 -->
+  <div class="video-player-wrap">
+    <!-- 上方：视频信息区 (极简 仅标题+作者) -->
+    <div class="video-info-box">
+      <h2 class="video-name">{{ videoName || '暂无视频名称' }}</h2>
+      <div class="video-author">UP主：{{ author || '未知上传者' }}</div>
+    </div>
+
+    <!-- 下方：播放器区域 -->
+    <div class="player-box">
+      <div id="dplayer"></div>
+    </div>
   </div>
 </template>
 
@@ -18,44 +25,33 @@ export default {
   data() {
     return {
       dp: null,
-      videoId: '', // 存储当前播放的视频ID
-      videoName: '',  // 视频名称
-      author: ''     // 视频作者
+      videoId: '',
+      videoName: '',
+      author: ''
     }
   },
   mounted() {
-    // 1. 获取路由传过来的视频ID
     this.getVideoId()
-    // 2. 根据ID初始化播放器，播放对应视频
     this.initPlayer()
   },
   beforeDestroy() {
-    // 优化销毁：防止播放器实例内存泄漏
     this.dp && this.dp.destroy()
     this.dp = null
   },
   methods: {
-    // ✅ 核心：获取路由中传递的视频id
     getVideoId() {
-      // 接收列表页通过 query 传过来的id 例如：/video?id=test
       this.videoId = webStore.videoItem.id || ''
       this.videoName = webStore.videoItem.videoName || ''
       this.author = webStore.videoItem.author || ''
-
-      console.log('当前播放视频ID：', this.videoId)
-      console.log('当前播放视频名称：', this.videoName)
-      console.log('当前播放视频作者：', this.author)
     },
-    // ✅ 核心：初始化DPlayer，根据ID拼接视频播放路径
     initPlayer() {
       this.dp = new DPlayer({
         container: document.getElementById('dplayer'),
         autoplay: false,
-        theme: '#FADFA3',
+        theme: '#FADFA3', // 保留原主题色
         loop: true,
         lang: 'zh-cn',
         video: {
-          // 关键修改：拼接路径 /videos/你的id.mp4
           url: `/videos/${this.videoId}.mp4`,
           type: 'auto'
         }
@@ -65,18 +61,64 @@ export default {
 }
 </script>
 
-<style>
-.player-center-box {
-  width: 100vw; 
-  height: 100vh; 
-  display: flex; 
-  align-items: center; 
-  justify-content: center;
+<style scoped>
+/* 全局重置 清除默认边距 一屏完整显示 无滚动条 */
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
-/* 解决播放器容器可能的间距问题 */
+html, body {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #f2f2f2;
+}
+
+/* 核心：上下垂直排版 整体居中 间距适中 铺满页面不溢出 */
+.video-player-wrap {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 25px;
+  padding: 30px 20px;
+}
+
+/* 上方：视频信息区 极简纯白卡片 适配播放器宽度 */
+.video-info-box {
+  width: 320px;
+  padding: 20px 25px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  text-align: center;
+}
+.video-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 10px;
+}
+.video-author {
+  font-size: 16px;
+  color: #555;
+}
+
+/* 下方：播放器区域 缩小优化尺寸 刚好适配页面 不超出 */
+.player-box {
+  width: 320px;
+  height: 570px;
+}
 #dplayer {
+  width: 100% !important;
+  height: 100% !important;
   line-height: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+  border: 1px solid #eee;
 }
 </style>
