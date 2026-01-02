@@ -24,6 +24,10 @@ const routes = [
         component: () => import("@/views/user.vue")
     },
     {
+        path: "/videoup",
+        component: () => import("@/views/videoup.vue")
+    },
+    {
         path:"/test",
         redirect:"/video"
     }

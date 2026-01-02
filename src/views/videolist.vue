@@ -10,10 +10,11 @@
             <img class="video-pic"
             :src="`/pics/${item.id}.png`" 
             @error="handleImgError($event)"
-            @click="goTo(item.id)"
+            @click="goTo(item)"
           />
         </div>
-        <div class="video-name" @click="goTo(item.id)">{{ item.videoName }}</div>
+        <div class="video-name" @click="goTo(item)">{{ item.videoName }}</div>
+        <div class="video-author" @click="goTo(item)">{{ item.author }}</div>
       </div>
       
       <!-- 空数据兜底 -->
@@ -41,14 +42,19 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
 import { useRouter } from 'vue-router';
+import { useWebStore } from '@/stores/web.js';
 
 const router = useRouter();
+const webStore = useWebStore();
 
-const goTo = (videoId) => {
-     router.push({
-        path: '/video',
-        query: { id: videoId } // 把视频id通过【url参数】传递，格式：/video?id=test 或 /video?id=test2
-    });
+
+const goTo = (item) => {
+    webStore.videoItem = item;
+    console.log('点击的视频项：', webStore.videoItem);
+    router.push({
+      path: '/video',
+      query:{ id: item.id } // 把视频id通过【url参数】传递，格式：/video?id=test 或 /video?id=test2
+  });
 }
 // 1. 列表数据 & 加载状态
 const videoList = ref([]) // 视频列表数组，对应JSON的records
@@ -70,11 +76,11 @@ const pageInfo = reactive({
 const getVideoList = async () => {
   try {
     loading.value = true
-    // ✅ 后端请求前缀已配置 /api ，接口地址直接拼接即可
+
     const { data } = await axios.get('/api/video/getVideoPage', {
       params: pageParams // 传分页参数：current + size
     })
-    // ✅ 解构后端返回的JSON数据，与你提供的结构完全匹配
+
     const { records, total, size, current, pages } = data
     videoList.value = records // 赋值列表数据
     // 更新分页信息
@@ -138,9 +144,14 @@ onMounted(() => {
   background-color: #f5f7fa;
 }
 .video-name {
-  color: #165DFF;
+  color: #000000;
   font-size: 16px;
   font-weight: 500;
+}
+.video-author {
+  color: #000000;
+  font-size: 14px;
+  margin-top: 4px;
 }
 .empty-data {
   width: 100%;

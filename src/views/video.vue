@@ -1,5 +1,6 @@
 <template>
   <!-- 外层全屏flex容器：核心！实现水平+垂直居中 -->
+  <div class="video-title">{{ videoName }}</div>
   <div class="player-center-box">
     <!-- 你的DPlayer挂载容器，保留原有宽高540*960不变 -->
     <div id="dplayer" style="width: 540px; height: 960px"></div>
@@ -8,13 +9,18 @@
 
 <script>
 import DPlayer from 'dplayer'
+import { useWebStore } from '@/stores/web.js';
+
+const webStore = useWebStore();
 
 export default {
   name: 'VideoPlayer',
   data() {
     return {
       dp: null,
-      videoId: '' // 存储当前播放的视频ID
+      videoId: '', // 存储当前播放的视频ID
+      videoName: '',  // 视频名称
+      author: ''     // 视频作者
     }
   },
   mounted() {
@@ -32,7 +38,13 @@ export default {
     // ✅ 核心：获取路由中传递的视频id
     getVideoId() {
       // 接收列表页通过 query 传过来的id 例如：/video?id=test
-      this.videoId = this.$route.query.id || ''
+      this.videoId = webStore.videoItem.id || ''
+      this.videoName = webStore.videoItem.videoName || ''
+      this.author = webStore.videoItem.author || ''
+
+      console.log('当前播放视频ID：', this.videoId)
+      console.log('当前播放视频名称：', this.videoName)
+      console.log('当前播放视频作者：', this.author)
     },
     // ✅ 核心：初始化DPlayer，根据ID拼接视频播放路径
     initPlayer() {

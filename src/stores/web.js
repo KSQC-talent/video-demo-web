@@ -13,7 +13,13 @@ export const useWebStore = defineStore("web", () => {
         users.value += 1
     }  
 
-    return { web, users, userAdd }
+    const videoItem = reactive({
+        id: '',
+        videoName: '',
+        author: ''
+    })
+
+    return { web, users, userAdd, videoItem }
 },{
     persist:true
 })
