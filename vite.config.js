@@ -11,6 +11,8 @@ export default defineConfig({
     }
   },
   server: {
+    host: '0.0.0.0',
+    port: 80,
     // ✅ 配置VITE代理，解决axios跨域问题
     proxy: {
       // 配置代理标识：所有以 /api 开头的请求，都会被代理到后端地址
